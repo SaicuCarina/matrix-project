@@ -28,9 +28,9 @@ Jocul ales de mine este un Bomberman reinterpretat. Am ales acest joc, deoarece 
 Jocul se desfasoara astfel: 
   1. La inceput, jucatorul se afla pe pozitia [0,0] din matrice si se genereaza o harta de pereti. Scopul jocului este ca jucatorul sa plaseze bombe pentru a distruga toti peretii.
   2. Dificultatea este data de 3 nivele:
-    - La PRIMUL nivel jucatorul are timp nelimitat de a distruge peretii si nu poate sa fie omorat de bombe daca se afla in raza lor cand explodeaza.
-    - La AL DOILEA nivel jucatorul are timp nelimitat de a distruge peretii, dar poate sa fie omorat de bombe.
-    - La AL TREILEA nivel jucatorul poate castiga jocul daca reuseste sa doboare toti peretii in mai putin de 60 de secunde si fara sa fie omorat de pereti.
+      - La PRIMUL nivel jucatorul are timp nelimitat de a distruge peretii si nu poate sa fie omorat de bombe daca se afla in raza lor cand explodeaza.
+      - La AL DOILEA nivel jucatorul are timp nelimitat de a distruge peretii, dar poate sa fie omorat de bombe.
+      - La AL TREILEA nivel jucatorul poate castiga jocul daca reuseste sa doboare toti peretii in mai putin de 60 de secunde si fara sa fie omorat de pereti.
   3. Ocupabilitatea hartii de pereti creste odata cu nivelul de dificultate.
   4. Podiumul este actualizat doar daca jucatorul a castigat jocul (a ajuns la ultimul nivel si nu a murit).
   5. Daca jucatorul nu isi seteaza numele inainte de a incepe jocul si are un scor de podium, numele care va aparea in dreptul scorului lui este "AAA".
