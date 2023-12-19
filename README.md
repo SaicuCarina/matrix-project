@@ -23,19 +23,17 @@ Trebuie sa realizam un joc pe o matrice de leduri 8x8, trebuie sa creasca in dif
 
 # Realizarea Jocului
 
-Jocul ales de mine este un Bomberman reinterpretat. Am ales acest joc, deoarece am putut sa continui progresul facut la tema 7 si am vrut sa vad daca il pot imbunatati si sa il fac sa ajunga intr-o forma finita.
+1. Jocul ales de mine este un Bomberman reinterpretat. Am ales acest joc, deoarece am putut sa continui progresul facut la tema 7 si am vrut sa vad daca il pot imbunatati si sa il fac sa ajunga intr-o forma finita.
+2. Jocul se desfasoara astfel: la inceput jucatorul se afla pe pozitia [0,0] din matrice si se genera o harta de pereti. Scopul jocului este ca jucatorul sa plaseze bombe pentru a distruga toti peretii.
+3. Dificultatea este data de 3 nivele:
 
-Jocul se desfasoara astfel: la inceput jucatorul se afla pe pozitia [0,0] din matrice si se genera o harta de pereti. Scopul jocului este ca jucatorul sa plaseze bombe pentru a distruga toti peretii.
+  - La PRIMUL nivel jucatorul are timp nelimitat de a distruge peretii si nu poate sa fie omorat de bombe daca se afla in raza lor cand explodeaza.
+  - La AL DOILEA nivel jucatorul are timp nelimitat de a distruge peretii, dar poate sa fie omorat de bombe.
+  - La AL TREILEA nivel jucatorul poate castiga jocul daca reuseste sa doboare toti peretii in mai putin de 60 de secunde si fara sa fie omorat de pereti.
 
-Dificultatea este data de 3 nivele:
-
-La PRIMUL nivel jucatorul are timp nelimitat de a distruge peretii si nu poate sa fie omorat de bombe daca se afla in raza lor cand explodeaza.
-La AL DOILEA nivel jucatorul are timp nelimitat de a distruge peretii, dar poate sa fie omorat de bombe.
-La AL TREILEA nivel jucatorul poate castiga jocul daca reuseste sa doboare toti peretii in mai putin de 60 de secunde si fara sa fie omorat de pereti.
-
-Ocupabilitatea hartii de pereti creste odata cu nivelul de dificultate.
-Podiumul este actualizat doar daca jucatorul a castigat jocul (a ajuns la ultimul nivel si nu a murit).
-Daca jucatorul nu isi seteaza numele inainte de a incepe jocul si are un scor de podium, numele care va aparea in dreptul scorului lui este "AAA".
+4. Ocupabilitatea hartii de pereti creste odata cu nivelul de dificultate.
+5. Podiumul este actualizat doar daca jucatorul a castigat jocul (a ajuns la ultimul nivel si nu a murit).
+6. Daca jucatorul nu isi seteaza numele inainte de a incepe jocul si are un scor de podium, numele care va aparea in dreptul scorului lui este "AAA".
 
 # Componente folosite
 
