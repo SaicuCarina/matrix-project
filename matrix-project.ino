@@ -42,7 +42,7 @@ byte matrixBrightness = 6;
 
 bool sound = 1;
 
-char currentPlayer[3] = { 'A', 'A', 'A' };
+char player[3] = { 'A', 'A', 'A' };
 int nameState = 0;
 int highscoreMenuState = 1;
 
@@ -185,7 +185,7 @@ void setup() {
 void loop() {
   lc.setIntensity(0, matrixBrightness);
   // analogWrite(LCDbrightnessPin, LCDbrightness * 10);
-  if (millis() < 3000) {
+  if (millis() < 3000) { //the welcome message is displayed for 3 seconds
     lcd.setCursor(0, 0);
     lcd.print("Welcome to");
     lcd.setCursor(0, 1);
@@ -193,8 +193,10 @@ void loop() {
   } else {
     buttonDebounce();
     
-    inMenu = buttonValue;
+    inMenu = buttonValue; 
 
+    // the button debounce logic it that if the button is in the false state the main menu is diplayed
+    // and if the button state is true the second menu is displayed
     if (inMenu == false and menuOption != 6) {
       settingsMenuState = 1;
       nameState = 0;
@@ -208,7 +210,6 @@ void loop() {
 
 
 void mainMenu() {
-
   lcd.createChar(1, select);
   lcd.createChar(2, up);
   lcd.createChar(3, down);
@@ -333,7 +334,7 @@ void secondMenu() {
     case 6:
       lcd.clear();
       startGame();
-      player();
+      playerBombBlink();
       updateLCD();
       break;
   }
@@ -446,7 +447,7 @@ void settings() {
     case 0:
       settingsMenuState = 1;
       break;
-
+      
     case 1:
       lcd.clear();
       lcd.print(" Settings menu");
@@ -526,9 +527,9 @@ void settings() {
       lcd.setCursor(0, 1);
       lcd.print(" Name:");
       lcd.setCursor(7, 1);
-      lcd.print(currentPlayer[0]);
-      lcd.print(currentPlayer[1]);
-      lcd.print(currentPlayer[2]);
+      lcd.print(player[0]);
+      lcd.print(player[1]);
+      lcd.print(player[2]);
       lcd.setCursor(15, 0);
       lcd.write(2);
       lcd.setCursor(15, 1);
@@ -555,9 +556,9 @@ void settings() {
       lcd.write(1);
       lcd.print("Name:");
       lcd.setCursor(7, 1);
-      lcd.print(currentPlayer[0]);
-      lcd.print(currentPlayer[1]);
-      lcd.print(currentPlayer[2]);
+      lcd.print(player[0]);
+      lcd.print(player[1]);
+      lcd.print(player[2]);
       lcd.setCursor(14, 1);
       lcd.write(4);
       lcd.setCursor(15, 1);
@@ -673,14 +674,16 @@ void navigateName(){
         if (xValue > maxThreshold) {
           if (nameState < 3) {
             nameState++;
-            currentPlayer[nameState - 2] = (char)(currentPlayer[nameState - 2] - 1);
+            player[nameState - 2] = (char)(player[nameState - 2] - 1);
+            // because of the delay I had to make the player take the second last character
           }
           xJoyMoved = true;
         }
         if (xValue < minThreshold) {
           if (nameState > 0) {
             nameState--;
-            currentPlayer[nameState] = (char)(currentPlayer[nameState] - 1);
+            player[nameState] = (char)(player[nameState] - 1);
+            // because of the delay I had to make the player take the second last character
           }
           xJoyMoved = true;
         }
@@ -690,11 +693,12 @@ void navigateName(){
         xJoyMoved = false;
       }
 
-      if (currentPlayer[nameState - 1] != 'Z') {
-        currentPlayer[nameState - 1] = (char)(currentPlayer[nameState - 1] + 1);
+      // here I make the current character to toggle continuously with a delay of 0.75 sec
+      if (player[nameState - 1] != 'Z') {
+        player[nameState - 1] = (char)(player[nameState - 1] + 1);
         delay(750);
       } else {
-        currentPlayer[nameState - 1] = 'A';
+        player[nameState - 1] = 'A';
         delay(750);
       }
 }
@@ -782,6 +786,7 @@ void navigateHighScore() {
 
 ///////////////////////////////////////////////////////////
 
+// reset the highscore when the reset menu was enetered
 
 void resetHighscore() {
   first.name[0] = '-';
@@ -820,7 +825,7 @@ void buttonDebounce() {
       buttonState = reading;
 
       if (buttonState == HIGH) {
-        makeSound(200);
+        makeSound(200); // the buzzer makes a sound enery time the sw is pressed
         buttonValue = !buttonValue;
       }
     }
@@ -830,6 +835,7 @@ void buttonDebounce() {
 }
 
 void makeSound(int toneSound) {
+  // if the sound is on the buzzer makes sounds
   if (sound) {
     tone(pinBuzzer, toneSound, 30);
   }
@@ -837,6 +843,7 @@ void makeSound(int toneSound) {
 
 /////////////////////////////////////////////////////////////////////
 
+// when the game is over a sad face is displayed on the matrix
 void displaySadFace() {
   byte sadFace[8] = {
     B00000000,
@@ -853,6 +860,8 @@ void displaySadFace() {
     lc.setRow(0, row, sadFace[row]);
   }
 }
+
+// when the game is won a cup is displayed on the matrix
 
 void displayCup() {
   byte cup[8] = {
@@ -871,6 +880,8 @@ void displayCup() {
   }
 }
 
+
+//a generate a different map for every game with different ocupability for every level
 void generateMap(int numLedsLevels) {
 
   for (int i = 0; i < numLedsLevels; ++i) {
@@ -884,6 +895,8 @@ void generateMap(int numLedsLevels) {
   }
 }
 
+// i need the reset map function because when the game is lost and i want to start a new game
+// the map have some ghost walls
 void resetMap() {
   for(int i=0; i<8; i++){
     for(int j=0; j<8; j++){
@@ -894,29 +907,31 @@ void resetMap() {
 
 void updateLCD() {
   lcd.clear();
+  // if i am still playing i want the display to show the level and my name
   if(youWin == 0){
     lcd.setCursor(0, 0);
     lcd.print("Level:");
     lcd.print(currentLevel);
     lcd.setCursor(8, 0);
     lcd.print("Name:");
-    lcd.print(currentPlayer[0]);
-    lcd.print(currentPlayer[1]);
-    lcd.print(currentPlayer[2]);
+    lcd.print(player[0]);
+    lcd.print(player[1]);
+    lcd.print(player[2]);
   }
   else{
     lcd.clear();
     lcd.print("You Won!");
   }
   
-
+  // if the current level is 3 i want to have a countdown on the time remaining
   if (currentLevel == 3) {
     lcd.setCursor(0, 1);
     lcd.print("Time: ");
-    lcd.print(max(0, (level3TimeLimit - level3ElapsedTime) / 1000));  // Display seconds remaining
+    lcd.print(max(0, (level3TimeLimit - level3ElapsedTime) / 1000));  // display seconds remaining
     lcd.print("sec");
   }
 
+  // i want the disply to tell me when i have a highscore
   if (wasHighscore == 1) {
     lcd.setCursor(9, 0);
     lcd.print("New HC");
@@ -925,6 +940,7 @@ void updateLCD() {
   delay(10);
 }
 
+// this function verify if the player succeeded in destroying all the walls
 bool isLevelCompleted() {
   for (int row = 0; row < matrixSize; ++row) {
     for (int col = 0; col < matrixSize; ++col) {
@@ -944,30 +960,34 @@ void howToMove() {
   int deltaY = 0;
 
   if (joystickX < minThreshold) {
-    deltaX = -1;
+    deltaX = -1; // the joystick moved to the left
   } else if (joystickX > maxThreshold) {
-    deltaX = 1;
+    deltaX = 1; // the joystick moved to the rigth
   }
 
   if (joystickY < minThreshold) {
-    deltaY = -1;
+    deltaY = -1; // the joystick moved up
   } else if (joystickY > maxThreshold) {
-    deltaY = 1;
+    deltaY = 1; // the joystick moved down
   }
 
   movePlayer(deltaX, deltaY);
 }
 
 void movePlayer(int deltaX, int deltaY) {
-  isPlayerMoving = (deltaX != 0 || deltaY != 0);
+  isPlayerMoving = (deltaX != 0 || deltaY != 0); // if deltaX != 0 or deltaY != 0 then the isPlayerMoveing = 1;
+  // I need this variable because while moeing the player should not blink
 
   unsigned long currentTime = millis();
+  // I need a moveInterval for the player so that the movemente are not too quick
   if (currentTime - lastMoveTime >= moveInterval) {
+    // I initialize the new coordinates for the player
     int nextX = playerX + deltaX;
     int nextY = playerY + deltaY;
 
     if (nextX >= 0 && nextX < matrixSize && nextY >= 0 && nextY < matrixSize && mapPlay[nextY][nextX] != 1) {
       lc.setLed(0, playerY, playerX, false);
+      // if the player can move to the new spot the player is given the new coordinates
 
       playerX = nextX;
       playerY = nextY;
@@ -984,11 +1004,14 @@ void bomb() {
     lastDebounceTime = millis();
   }
 
+  // if the sw was pressed i have to verify if i do not have to many bombs placed
+
   if ((millis() - lastDebounceTime) > debounceDelay) {
     if (reading != swState) {
       swState = reading;
       if (swState == LOW) {
         if (numBombs < maxBombs) {
+          // I can place the new bomb and initalize the startTime(for detonation) and lastBlinkingTime(for blinking)
           bombs[numBombs].x = playerX;
           bombs[numBombs].y = playerY;
           bombs[numBombs].startTime = millis();
@@ -1008,30 +1031,41 @@ void bomb() {
   for (int i = 0; i < numBombs; ++i) {
     unsigned long currentTimeBomb = millis();
     if (currentTimeBomb - bombs[i].startTime >= bombDetonationTime) {
+      // if my current bomb should explode 
+      // I have to verify if my player is not dead (for level 2 and 3)
+      // the player is dead if he was in the bomb area when it exploded
 
       if (currentLevel >= 2 ) {
         if((playerX == bombs[i].x - 1 && playerY == bombs[i].y) || (playerX == bombs[i].x && playerY == bombs[i].y - 1) 
         || (playerX == bombs[i].x + 1 && playerY == bombs[i].y) || (playerX == bombs[i].x && playerY == bombs[i].y + 1)
         || (playerX == bombs[i].x && playerY == bombs[i].y))
           gameOver();
+          // the player died and the game is over
       }
       if(isDead == 0){
-      destroyWalls(bombs[i].x - 1, bombs[i].y);
-      destroyWalls(bombs[i].x, bombs[i].y - 1);
-      destroyWalls(bombs[i].x + 1, bombs[i].y);
-      destroyWalls(bombs[i].x, bombs[i].y + 1);
+        // if the player is not dead i have to destry the walls
+        destroyWalls(bombs[i].x - 1, bombs[i].y);
+        destroyWalls(bombs[i].x, bombs[i].y - 1);
+        destroyWalls(bombs[i].x + 1, bombs[i].y);
+        destroyWalls(bombs[i].x, bombs[i].y + 1);
 
-      lc.setLed(0, bombs[i].y, bombs[i].x, false);
+        // after the walls have been destroyed the bomb should disappear
+        lc.setLed(0, bombs[i].y, bombs[i].x, false);
+        // the bomb is removed from the array
+        numBombs--;
+        bombs[i] = bombs[numBombs];
 
-      numBombs--;
-      bombs[i] = bombs[numBombs];
-
-      isPlayerBlinking = true;
-      tone(pinBuzzer, freqBuzzer, timeBuzzer);
+        isPlayerBlinking = true;
+        if(sound == 1){
+          tone(pinBuzzer, freqBuzzer, timeBuzzer); // the buzzer makes a sound when a bomb explodes
+        }
+        
       }
       
     }
   }
+
+  // here i check if any of the levels where completed 
 
   if (currentLevel == 1 && isLevelCompleted()) {
     currentLevel = 2;
@@ -1052,6 +1086,8 @@ void bomb() {
     generateMap(ledsLevel3);
   }
 
+  // if the level 3 was completed then the player has won and I have to check if the score is a highscore
+
   if(currentLevel == 3 && isLevelCompleted()) {
     isPlayerBlinking = false;
     youWin = 1;
@@ -1071,9 +1107,9 @@ void bomb() {
       second.name[2] = first.name[2];
       second.score = first.score;
 
-      first.name[0] = currentPlayer[0];
-      first.name[1] = currentPlayer[1];
-      first.name[2] = currentPlayer[2];
+      first.name[0] = player[0];
+      first.name[1] = player[1];
+      first.name[2] = player[2];
       first.score = currentScore;
     }
     else{
@@ -1085,18 +1121,18 @@ void bomb() {
         third.name[2] = second.name[2];
         third.score = second.score;
 
-        second.name[0] = currentPlayer[0];
-        second.name[1] = currentPlayer[1];
-        second.name[2] = currentPlayer[2];
+        second.name[0] = player[0];
+        second.name[1] = player[1];
+        second.name[2] = player[2];
         second.score = currentScore;
       }
       else{
         if(currentScore > third.score and wasHighscore == 0){
           wasHighscore = 1;
 
-          third.name[0] = currentPlayer[0];
-          third.name[1] = currentPlayer[1];
-          third.name[2] = currentPlayer[2];
+          third.name[0] = player[0];
+          third.name[1] = player[1];
+          third.name[2] = player[2];
           third.score = currentScore;
         }
       }
@@ -1113,6 +1149,7 @@ void bomb() {
 
 }
 
+// if the wall was on I set it to off and mark it on the map with 0
 void destroyWalls(int x, int y) {
   if (x >= 0 && x < matrixSize && y >= 0 && y < matrixSize && mapPlay[y][x] == 1) {
     lc.setLed(0, y, x, false);
@@ -1120,25 +1157,28 @@ void destroyWalls(int x, int y) {
   }
 }
 
-void player() {
+void playerBombBlink() {
   unsigned long currentTime = millis();
 
+  // the player is blinking with the playerBlinkInterval
   if (isPlayerBlinking && currentTime - lastPlayerBlinkTime >= playerBlinkInterval) {
     isPlayerVisible = !isPlayerVisible;
     lastPlayerBlinkTime = currentTime;
   }
 
+  // I add this check so that when the game is over and the cup or the sad face is displayed on the matrix the player is not visible
   if (isPlayerVisible) {
     lc.setLed(0, playerY, playerX, true);
   } else {
     lc.setLed(0, playerY, playerX, false);
   }
 
+  // while the player is moveing the led should not blink for a smoother game
   if (isPlayerMoving) {
     lc.setLed(0, playerY, playerX, true);
   }
 
-  // Display active bombs
+  // display active bombs and make them blink
   for (int i = 0; i < numBombs; ++i) {
     if (bombs[i].isBlinking && currentTime - bombs[i].lastBlinkTime >= bombBlinkInterval) {
       bombLedState = !bombLedState;
@@ -1154,7 +1194,9 @@ void gameOver() {
   menuOption = 1;
   playerX = 0;
   playerY = 0;
-  tone(pinBuzzer, 300, 500);
+  if(sound == 1){
+    tone(pinBuzzer, 300, 500);
+  }
   lcd.clear();
   lcd.print("Game Over!");
   isPlayerBlinking = false;
@@ -1168,13 +1210,13 @@ void startGame() {
   isPlaying = 1;
   howToMove();
   bomb();
-  player();
+  playerBombBlink();
 
-  // Update elapsed time for level 3
+  // update elapsed time for level 3
   if (currentLevel == 3 && isLevelCompleted() == false && isDead == 0) {
     level3ElapsedTime = millis() - level3StartTime;
 
-    // Check if time limit exceeded
+    // check if time limit exceeded
     if (level3ElapsedTime >= level3TimeLimit) {
       gameOver();
       return;
